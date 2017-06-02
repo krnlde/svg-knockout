@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>svg-knockout</title>
+
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      svg {
+        overflow: hidden;
+      }
+
+      #stage-container {
+        height: 100%;
+      }
+
+      #stage {
+        display: block;
+        width: 100%;
+        height: 100%;
+        background: #222;
+      }
+
+      #minimap-panel {
+        position: absolute;
+        background: #111;
+        top: 0;
+        right: 0;
+        width: 300px;
+        height: 300px;
+      }
+      .minimapViewport {
+
+        fill: red;
+        fill-opacity: .2;
+        stroke: red;
+        vector-effect: non-scaling-stroke;
+      }
+
+      .pannable {
+        cursor: -webkit-grab;
+        cursor: grab;
+      }
+      .pannable.panning {
+        cursor: -webkit-grabbing;
+        cursor: grabbing;
+      }
+
+    </style>
+  </head>
+  <body>
+    <main id="stage-container" data-bind="visible: true, with: stage" style="display: none">
+      <!-- <svg id="stage" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" data-bind="css: getClasses(), attr: {'shape-rendering': shapeRendering, width: width, height: height, viewBox: '0 0 ' + width() + ' ' + height()}" color-rendering="optimizeSpeed" text-rendering="optimizeSpeed" image-rendering="optimizeSpeed"> -->
+      <svg id="stage" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" data-bind="css: getClasses(), event: {mousedown: handlePan, wheel: handleZoom}" color-rendering="optimizeSpeed" text-rendering="optimizeSpeed" image-rendering="optimizeSpeed">
+
+        <defs>
+          <pattern id="grid-pattern-small" data-bind="attr: {width: grid.dx, height: grid.dy}" patternUnits="userSpaceOnUse">
+            <path data-bind="attr: {d: 'M ' + grid.dx() + ' 0 L 0 0 0 ' + grid.dy(), stroke: grid.color}" stroke-width="2" fill="none" stroke-opacity=".1" vector-effect="non-scaling-stroke"></path>
+          </pattern>
+          <pattern id="grid-pattern" data-bind="attr: {width: grid.dx() * 10, height: grid.dy() * 10, patternTransform: matrix.toTransform()}" patternUnits="userSpaceOnUse">
+            <rect data-bind="attr: {width: grid.dx() * 10, height: grid.dy() * 10}" fill="url(#grid-pattern-small)"></rect>
+            <path data-bind="attr: {d: 'M ' + (grid.dx() * 10) + ' 0 L 0 0 0 ' + (grid.dy() * 10), stroke: grid.color}" stroke-width="2" fill="none" stroke-opacity=".25" vector-effect="non-scaling-stroke"></path>
+          </pattern>
+
+          <g id="TestDot">
+            <circle class="testDot" data-bind="attr: {cx: x, cy: y, r: width}" fill="red" pointer-events="none"></circle>
+          </g>
+        </defs>
+
+        <rect id="grid" fill="url(#grid-pattern)" width="100%" height="100%" pointer-events="none"></rect>
+
+        <g id="stage" data-bind="attr: {transform: matrix.toTransform()}">
+
+          <circle r="5"></circle>
+
+          <g id="minimapReference">
+            <rect x="10" y="35" width="200" height="200"></rect>
+            <rect x="100" y="350" width="270" height="200" fill="green"></rect>
+
+            <g class="children" data-bind="foreach: {data: children, as: 'child'}">
+              <g></g>
+              <g data-bind="template: {name: child.name, data: child}"></g>
+            </g>
+          </g>
+
+        </g>
+
+        <g class="children-labels" data-bind="foreach: {data: children, as: 'child'}">
+          <g data-bind="attr: {transform: 'translate(' + child.screenPosition() + ')'}">
+            <line data-bind="attr: {x1: child.screenWidth()/2, x2: child.screenWidth()/2 + 20}" y2="-25" stroke="white"></line>
+            <text data-bind="attr: {x: child.screenWidth()/2 + 25}, text: child.label" y="-25" fill="white"></text>
+          </g>
+        </g>
+
+      </svg>
+    </main>
+    <aside id="minimap-panel">
+      <svg class="minimap" data-bind="attr: {viewBox: stage.minimapViewport}" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" preserveAspectRatio="xMidYMid meet" viewBox="0 0 1000 1000" width="100%" height="100%" shape-rendering="optimizeSpeed" color-rendering="optimizeSpeed" text-rendering="optimizeSpeed" image-rendering="optimizeSpeed">
+        <use class="minimapContent" xlink:href="#minimapReference" pointer-events="none"></use>
+        <rect class="minimapViewport" data-bind="attr: {transform: stage.matrix.invert().toTransform()}" width="100vw" height="100vh" pointer-events="none"></rect>
+      </svg>
+    </aside>
+
+    <script type="text/javascript" src="bundle/application.js" defer></script>
+  </body>
+</html>
