@@ -1,47 +1,46 @@
 import $ from 'jquery';
 
-import TestDot from '../testdot';
 import StageElement from '../stageelement';
 
 const namespace = '.pannable';
 
 const Pannable = {
-  startTestDot: null,
-  currentTestDot: null,
   handlePan(vm, event) {
-    if (event.isDefaultPrevented) return;
+    if (event.defaultPrevented) return;
     if (!(this instanceof StageElement)) throw new Error('I don\'t know how to handle other things than StageElements');
     event.preventDefault();
+    event.stopImmediatePropagation();
 
-    const $element    = $(event.target);
-    const startPoint  = this.getMousePoint(event);
+    let contextMatrix    = this.screenMatrix().inverse();
+    const matrix         = this.matrix();
+    const $element       = $(event.target);
+    const rawStartPoint  = this.getMousePoint(event);
 
-    const start = this.getPoint({
-      x: this.x(),
-      y: this.y(),
-    });
     $element.addClass('panning');
 
     $(window)
       .on('mouseup' + namespace, (e) => this.afterPan(e, $element))
       .on('mousemove' + namespace, (e) => {
-        if (e.originalEvent.isDefaultPrevented) return this.afterPan(e, $element);
+        if (e.originalEvent.defaultPrevented) return this.afterPan(e, $element);
+        e.preventDefault();
 
-        const currentPoint = this.getMousePoint(e);
+        contextMatrix = this.screenMatrix().inverse(); // expensive, but necessary
+
+        const startPoint = rawStartPoint.matrixTransform(contextMatrix);
+        const currentPoint = this.getMousePoint(e).matrixTransform(contextMatrix);
 
         const delta = this.getPoint({
           x: currentPoint.x - startPoint.x,
           y: currentPoint.y - startPoint.y
         });
 
-        this.x(start.x + delta.x);
-        this.y(start.y + delta.y);
+        this.matrix(matrix.translate(delta.x, delta.y));
       });
   },
   afterPan(e, $element) {
+    e.preventDefault();
+    e.stopImmediatePropagation();
     $(window).off(namespace);
-    this.root.children.remove(this.startTestDot);
-    this.root.children.remove(this.currentTestDot);
     $element.removeClass('panning');
   }
 };

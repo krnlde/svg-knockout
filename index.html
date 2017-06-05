@@ -46,7 +46,7 @@
       .minimapViewport {
 
         fill: red;
-        fill-opacity: .2;
+        fill-opacity: .1;
         stroke: red;
         vector-effect: non-scaling-stroke;
       }
@@ -56,8 +56,12 @@
         cursor: grab;
       }
       .pannable.panning {
-        cursor: -webkit-grabbing;
-        cursor: grabbing;
+        cursor: -webkit-grabbing !important;
+        cursor: grabbing !important;
+      }
+
+      .movable {
+        cursor: pointer;
       }
 
     </style>
@@ -65,7 +69,7 @@
   <body>
     <main id="stage-container" data-bind="visible: true, with: stage" style="display: none">
       <!-- <svg id="stage" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" data-bind="css: getClasses(), attr: {'shape-rendering': shapeRendering, width: width, height: height, viewBox: '0 0 ' + width() + ' ' + height()}" color-rendering="optimizeSpeed" text-rendering="optimizeSpeed" image-rendering="optimizeSpeed"> -->
-      <svg id="stage" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" data-bind="css: getClasses(), event: {mousedown: handlePan, wheel: handleZoom}" shape-rendering="optimizeSpeed" color-rendering="optimizeSpeed" text-rendering="optimizeSpeed" image-rendering="optimizeSpeed">
+      <svg id="stage" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" data-bind="css: getClasses(), event: {mousedown: handlePan, wheel: handleZoom}" color-rendering="optimizeSpeed" text-rendering="optimizeSpeed" image-rendering="optimizeSpeed">
 
         <defs>
           <pattern id="grid-pattern-small" data-bind="attr: {width: grid.dx, height: grid.dy}" patternUnits="userSpaceOnUse" shape-rendering="crispEdges">
@@ -77,10 +81,16 @@
           </pattern>
 
           <g id="TestDot">
-            <circle class="testDot" data-bind="attr: {r: width}" fill="red" pointer-events="none"></circle>
+            <circle class="testDot" data-bind="attr: {transform: transform, r: width, fill: color}" pointer-events="none"></circle>
+            <!-- <rect class="testDot" data-bind="attr: {transform: transform, width: width, height: height, fill: color}" pointer-events="none"></rect> -->
           </g>
           <g id="Rectangle">
-            <rect class="rectangle" data-bind="attr: {width: width, height: height}" fill="red" pointer-events="none"></rect>
+            <g data-bind="attr: {transform: transform}">
+              <rect class="rectangle" data-bind="attr: {width: width, height: height, fill: color}, css: getClasses(), event: {mousemove: $data.updatePosition, mousedown: $data.handlePan, wheel: $data.handleZoom}"></rect>
+              <g class="children" data-bind="foreach: {data: children, as: 'child'}">
+                <g data-bind="template: {name: child.name, data: child}"></g>
+              </g>
+            </g>
           </g>
         </defs>
 
@@ -91,19 +101,17 @@
           <circle r="5"></circle>
 
           <g id="minimapReference">
-            <rect x="100" y="350" width="270" height="200" fill="green"></rect>
-
             <g class="children" data-bind="foreach: {data: children, as: 'child'}">
-              <g data-bind="template: {name: child.name, data: child}, attr: {transform: child.transform}"></g>
+              <g data-bind="template: {name: child.name, data: child}"></g>
             </g>
           </g>
 
         </g>
 
-        <g class="children-labels" data-bind="foreach: {data: children, as: 'child'}">
+        <g class="children-labels" pointer-events="none" data-bind="foreach: {data: labels, as: 'child'}">
           <g data-bind="attr: {transform: child.screenPoint.topRight.toTranslate()}">
             <line x2="10" y2="-15" stroke="gray"></line>
-            <text data-bind="attr: {}, text: child.label" x="10" y="-15" fill="white"></text>
+            <text data-bind="text: child.label" x="10" y="-15" fill="white"></text>
           </g>
         </g>
 

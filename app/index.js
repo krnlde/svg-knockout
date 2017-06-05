@@ -2,6 +2,7 @@ import ko from 'tko/dist/tko';
 
 import Stage from './stage';
 
+ko.options.useOnlyNativeEvents = true;
 
 ko.subscribable.fn.invert = function () {
   return ko.pureComputed(() => {

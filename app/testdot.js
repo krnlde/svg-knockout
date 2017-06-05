@@ -4,6 +4,7 @@ import StageElement from './stageelement';
 export default class TestDot extends StageElement {
   width  = observable(10);
   height = observable(10);
+  color  = observable('red');
 
   screenPoint = {
     center: pureComputed(() => {
@@ -38,5 +39,5 @@ export default class TestDot extends StageElement {
 
   name = 'TestDot';
 
-  label = pureComputed(() => `x: ${this.x()}, y: ${this.y()}`);
+  label = pureComputed(() => `x: ${this.matrix().e}, y: ${this.matrix().f}`);
 }
