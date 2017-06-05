@@ -52,6 +52,7 @@ export default class Stage extends StageElement {
 
 
     const testDot = new TestDot(this);
+    testDot.label = 'Rotation center';
     $(svg).on('mousemove', (e) => {
       const testPoint   = this.getMousePoint(e).matrixTransform(testDot.screenMatrix().inverse());
       const originPoint = this.getMousePoint(e).matrixTransform(this.screenMatrix().inverse());

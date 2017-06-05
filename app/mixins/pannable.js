@@ -11,7 +11,7 @@ const Pannable = {
     event.preventDefault();
     event.stopImmediatePropagation();
 
-    let contextMatrix    = this.screenMatrix().inverse();
+    const contextMatrix  = this.screenMatrix().inverse(); // this is bad with animations, if need, put it inside the mousemove - which is expensive
     const matrix         = this.matrix();
     const $element       = $(event.target);
     const rawStartPoint  = this.getMousePoint(event);
@@ -24,7 +24,6 @@ const Pannable = {
         if (e.originalEvent.defaultPrevented) return this.afterPan(e, $element);
         e.preventDefault();
 
-        contextMatrix = this.screenMatrix().inverse(); // expensive, but necessary
 
         const startPoint = rawStartPoint.matrixTransform(contextMatrix);
         const currentPoint = this.getMousePoint(e).matrixTransform(contextMatrix);
