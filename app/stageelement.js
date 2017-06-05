@@ -15,6 +15,7 @@ export default class StageElement {
   };
 
 
+  svg    = null;
   root   = null;
   parent = null;
 
@@ -23,27 +24,33 @@ export default class StageElement {
   width    = observable(0);
   height   = observable(0);
   rotation = observable(0);
-  scale    = observable(2);
+  scale    = observable(1);
 
-  screenScale = pureComputed(() => {
-    if (!this.parent) return this.scale();
-    return this.scale() * this.parent.scale()
-  });
-  screenWidth = pureComputed(() => this.width() * this.screenScale());
+  // screenScale = pureComputed(() => {
+  //   if (!this.parent) return this.scale();
+  //   return this.scale() * this.parent.scale()
+  // });
+  // screenWidth = pureComputed(() => this.width() * this.screenScale());
 
-  rotationMatrix     = pureComputed(() => StageElement.identityMatrix.rotate(this.rotation()) );
   scalingMatrix      = pureComputed(() => StageElement.identityMatrix.scale(this.scale()) );
+  rotationMatrix     = pureComputed(() => StageElement.identityMatrix.rotate(this.rotation()) );
   translationMatrix  = pureComputed(() => StageElement.identityMatrix.translate(this.x(), this.y()) );
-  // rotateAroundMatrix = pureComputed(() => StageElement.identityMatrix.translate(this.center().x, this.center().y) );
+  originMatrix       = pureComputed(() => StageElement.identityMatrix.translate(this.origin().x, this.origin().y) );
 
-
+  // @see https://www.w3.org/TR/2011/WD-css3-2d-transforms-20111215/#matrix-decomposition
   matrix = pureComputed({
-    read: () =>StageElement.identityMatrix
-      .multiply(this.translationMatrix())
-      .multiply(this.scalingMatrix())
-      // .multiply(this.rotateAroundMatrix())
-      .multiply(this.rotationMatrix())
-      // .multiply(this.rotateAroundMatrix().inverse())
+    read: () => StageElement.identityMatrix
+      // .multiply(this.translationMatrix())
+      // .multiply(this.originMatrix())
+      // .multiply(this.rotationMatrix())
+      // .multiply(this.originMatrix().inverse())
+      // .multiply(this.scalingMatrix())
+
+      .translate(this.x(), this.y())
+      .scale(this.scale())
+      .translate(this.origin().x, this.origin().y)
+      .rotate(this.rotation())
+      .translate(-this.origin().x, -this.origin().y)
       ,
     write: (m) => {
       if (!(m instanceof SVGMatrix)) throw new Error('SVGMatrix object required to set the new matrix.');
@@ -55,26 +62,73 @@ export default class StageElement {
   });
 
   screenMatrix = pureComputed(() => {
-    if (!this.parent) return this.matrix();
-    return this.parent.matrix().multiply(this.matrix());
+    if (!this.parent) return this.svg.getScreenCTM().multiply(this.matrix());
+    return this.parent.screenMatrix().multiply(this.matrix());
   });
 
-  center = pureComputed(() => {
+  origin = pureComputed(() => {
     return this.getPoint({
       x: this.width() / 2,
       y: this.height() / 2,
     });
   });
 
-  constructor(parent) {
+  screenPoint = {
+    center: pureComputed(() => {
+      return this.getPoint({
+        x: this.width() / 2,
+        y: this.height() / 2,
+      }).matrixTransform(this.screenMatrix());
+    }),
+
+    topLeft: pureComputed(() => {
+      return this.getPoint().matrixTransform(this.screenMatrix());
+    }),
+
+    topRight: pureComputed(() => {
+      return this.getPoint({
+        x: this.width(),
+      }).matrixTransform(this.screenMatrix());
+    }),
+
+    bottomLeft: pureComputed(() => {
+      return this.getPoint({
+        y: this.height(),
+      }).matrixTransform(this.screenMatrix());
+    }),
+
+    bottomRight: pureComputed(() => {
+      return this.getPoint({
+        x: this.width(),
+        y: this.height(),
+      }).matrixTransform(this.screenMatrix());
+    }),
+  };
+
+  transform = pureComputed(() => {
+    return this.matrix.toTransform()();
+    // return `translate(${this.x()}, ${this.y()}) rotate(${this.rotation()} ${this.origin().x} ${this.origin().y}) scale(${this.scale()})`;
+  });
+
+  constructor(parent, {x = 0, y = 0, width = 10, height = 10, rotation = 0, scale = 1} = {}) {
     if (parent instanceof SVGSVGElement) {
       StageElement.identityMatrix = parent.createSVGMatrix();
       StageElement.point          = parent.createSVGPoint();
       this.root                   = this;
+      this.svg                    = parent;
     } else {
       this.root = parent.root;
+      this.svg  = parent.svg;
     }
+
     if (parent instanceof StageElement) this.parent = parent;
+
+    this.x(x);
+    this.y(y);
+    this.width(width);
+    this.height(height);
+    this.rotation(rotation);
+    this.scale(scale);
   }
 
   translate({x, y} = {}) {
@@ -104,11 +158,6 @@ export default class StageElement {
 
   toTransform({a,b,c,d,e,f}) {
     return 'matrix(' + [a, b, c, d, e, f].join(',') + ')';
-  }
-
-  screenPosition() {
-    const m = this.screenMatrix();
-    return m.e + ' ' + m.f;
   }
 
   getLeveledMatrix({x = 0, y = 0} = {}) {

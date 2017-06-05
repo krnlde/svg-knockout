@@ -14,13 +14,12 @@ const Zoomable = {
     if (!(vm instanceof StageElement)) throw new Error('I don\'t know how to handle other things than StageElements');
     event.preventDefault();
 
-    const delta          = event.deltaY * (event.deltaMode ? 100 : 1);
-    const scale          = this.scale();
-    const scaleBy        = (delta > 0 ? 1 + (Math.abs(delta) / 1000) : 1 / (1 + (Math.abs(delta) / 1000)));
-    const point          = this.getMousePoint(event);
-    const projectedPoint = point.matrixTransform(this.screenMatrix().inverse());
+    const delta   = event.deltaY * (event.deltaMode ? 100 : 1);
+    const scale   = this.scale();
+    const scaleBy = (delta > 0 ? 1 + (Math.abs(delta) / 1000) : 1 / (1 + (Math.abs(delta) / 1000)));
+    const point   = this.getMousePoint(event).matrixTransform(this.screenMatrix().inverse());
 
-    this.zoomAround(projectedPoint, scaleBy);
+    this.zoomAround(point, scaleBy);
   },
 
   zoomAround(point, scaleBy) {

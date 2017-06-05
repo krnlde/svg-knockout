@@ -18,6 +18,13 @@ ko.subscribable.fn.toTransform = function () {
   });
 };
 
+ko.subscribable.fn.toTranslate = function () {
+  return ko.pureComputed(() => {
+    const {x,y} = this();
+    return 'translate(' + [x, y].join( ) + ')';
+  });
+};
+
 const svg = document.getElementById('stage');
 
 class VM {
