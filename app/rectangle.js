@@ -4,7 +4,12 @@ import StageElement from './stageelement';
 export default class Rectangle extends StageElement {
   name = 'Rectangle';
 
-  label = pureComputed(() => `x: ${this.x()}, y: ${this.y()}`);
+  label = pureComputed(() => {
+    const point = this.getPoint({
+      x: this.width(),
+    }).matrixTransform(this.matrix());
+    return `x: ${point.x}, y: ${point.y}`;
+  });
 
 
   origin = pureComputed(() => {
