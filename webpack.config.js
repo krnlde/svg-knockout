@@ -4,9 +4,11 @@ const path = require('path');
 module.exports = {
   entry: './app/index.js',
   output: {
-    filename: 'bundle/application.js'
+    path: path.resolve(__dirname, 'bundle'),
+    publicPath: '/bundle/',
+    filename: 'application.js'
   },
-  devtool: '#cheap-source-map',
+  // devtool: '#cheap-source-map',
   module: {
     rules: [
       {

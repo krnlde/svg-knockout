@@ -7,16 +7,14 @@ export default class StageElement {
 
   static identityMatrix = null;
   static point = null;
+  static precise = observable(false);
 
   svg    = null;
   root   = null;
   parent = null;
 
-  label = null;
-  name  = () => {
-    if (!this.constructor) debugger;
-    return this.constructor.name;
-  };
+  name  = observable(this.constructor.name);
+  label = observable(this.name());
 
   width    = observable(0);
   height   = observable(0);
@@ -36,35 +34,55 @@ export default class StageElement {
     y: observable(this.height() / 2),
   };
 
+  center = pureComputed(() => {
+    return this.getPoint({
+      x: this.width() / 2,
+      y: this.height() / 2,
+    });
+  });
+
+  topLeft = pureComputed(() => {
+    return this.getPoint();
+  });
+
+  topRight = pureComputed(() => {
+    return this.getPoint({
+      x: this.width(),
+    });
+  });
+
+  bottomLeft = pureComputed(() => {
+    return this.getPoint({
+      y: this.height(),
+    });
+  });
+
+  bottomRight = pureComputed(() => {
+    return this.getPoint({
+      x: this.width(),
+      y: this.height(),
+    });
+  });
+
   screenPoint = {
     center: pureComputed(() => {
-      return this.getPoint({
-        x: this.width() / 2,
-        y: this.height() / 2,
-      }).matrixTransform(this.screenMatrix());
+      return this.center().matrixTransform(this.screenMatrix());
     }),
 
     topLeft: pureComputed(() => {
-      return this.getPoint().matrixTransform(this.screenMatrix());
+      return this.topLeft().matrixTransform(this.screenMatrix());
     }),
 
     topRight: pureComputed(() => {
-      return this.getPoint({
-        x: this.width(),
-      }).matrixTransform(this.screenMatrix());
+      return this.topRight().matrixTransform(this.screenMatrix());
     }),
 
     bottomLeft: pureComputed(() => {
-      return this.getPoint({
-        y: this.height(),
-      }).matrixTransform(this.screenMatrix());
+      return this.bottomLeft().matrixTransform(this.screenMatrix());
     }),
 
     bottomRight: pureComputed(() => {
-      return this.getPoint({
-        x: this.width(),
-        y: this.height(),
-      }).matrixTransform(this.screenMatrix());
+      return this.bottomRight().matrixTransform(this.screenMatrix());
     }),
   };
 
@@ -157,5 +175,18 @@ export default class StageElement {
 
   static determinant(m) {
     return (m.a * m.d) - (m.b * m.c);
+  }
+
+  static length({x, y}) {
+    return Math.sqrt(x ** 2 + y ** 2);
+  }
+  static norm({x, y}) {
+    const length = StageElement.length({x, y});
+    return StageElement.point.matrixTransform(x / length.x, y / length.y);
+  }
+
+  static snap(value, snapping) {
+    if (StageElement.precise()) return value;
+    return Math.round(value / snapping) * snapping;
   }
 }

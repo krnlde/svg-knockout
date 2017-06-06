@@ -1,6 +1,8 @@
 import ko from 'tko/dist/tko';
+import $ from 'jquery';
 
 import Stage from './stage';
+import StageElement from './stageelement';
 
 ko.options.useOnlyNativeEvents = true;
 
@@ -30,11 +32,15 @@ const svg = document.getElementById('stage');
 
 class VM {
   stage = new Stage(svg);
-
   constructor() {
     ko.deferUpdates = true;
+    window.test = this.stage.scaleToFit;
   }
 }
 
+$(window)
+  .on('keydown keyup', (e) => {
+    StageElement.precise(e.shiftKey);
+  });
 
 ko.applyBindings(new VM());

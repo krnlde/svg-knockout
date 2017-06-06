@@ -12,7 +12,7 @@ const Zoomable = {
 
   handleZoom(vm, event) {
     if (event.defaultPrevented) return;
-    if (!(vm instanceof StageElement)) throw new Error('I don\'t know how to handle other things than StageElements');
+    if (!(this instanceof StageElement)) throw new Error('I don\'t know how to handle other things than StageElements');
     event.preventDefault();
 
     const delta   = event.deltaY * (event.deltaMode ? 100 : 1);

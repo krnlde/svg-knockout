@@ -1,20 +1,24 @@
+// import {observable, unwrap} from 'tko/dist/tko';
 import $ from 'jquery';
 
 import StageElement from '../stageelement';
 
 const namespace = '.pannable';
 
+// $(window).on('keydown keyup', (e) => Rotatable.showHandle(e.ctrlKey));
+
 const Pannable = {
+  // showHandle: observable(false),
   handlePan(vm, event) {
     if (event.defaultPrevented) return;
     if (!(this instanceof StageElement)) throw new Error('I don\'t know how to handle other things than StageElements');
     event.preventDefault();
     event.stopImmediatePropagation();
 
-    const contextMatrix  = this.screenMatrix().inverse(); // this is bad with animations, if need, put it inside the mousemove - which is expensive
-    const matrix         = this.matrix();
-    const $element       = $(event.target);
-    const rawStartPoint  = this.getMousePoint(event);
+    const contextMatrix = this.screenMatrix().inverse();
+    const matrix        = this.matrix();
+    const $element      = $(event.target);
+    const startPoint    = this.getMousePoint(event).matrixTransform(contextMatrix);
 
     $element.addClass('panning');
 
@@ -24,8 +28,6 @@ const Pannable = {
         if (e.originalEvent.defaultPrevented) return this.afterPan(e, $element);
         e.preventDefault();
 
-
-        const startPoint = rawStartPoint.matrixTransform(contextMatrix);
         const currentPoint = this.getMousePoint(e).matrixTransform(contextMatrix);
 
         const delta = this.getPoint({
