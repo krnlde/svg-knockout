@@ -91,7 +91,7 @@ export default class StageElement {
     // return `translate(${this.x()}, ${this.y()}) rotate(${this.rotation()} ${this.origin.x()} ${this.origin.y()}) scale(${this.scale()})`;
   });
 
-  constructor(parent, {x = 0, y = 0, width = 10, height = 10, rotation = 0, scale = 1, color = '#000'} = {}) {
+  constructor(parent, {x = 0, y = 0, width = 10, height = 10, rotation = 0, scale = 1, color = '#000', name = null} = {}) {
     if (parent instanceof SVGSVGElement) {
       StageElement.identityMatrix = parent.createSVGMatrix();
       StageElement.point          = parent.createSVGPoint();
@@ -111,6 +111,7 @@ export default class StageElement {
     this.origin.y(this.height() / 2);
 
     this.color(color);
+    if (name !== null) this.name(name);
 
     const intialMatrix = StageElement.identityMatrix
       .translate(x, y)

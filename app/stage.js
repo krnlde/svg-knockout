@@ -12,17 +12,14 @@ import TestDot from './testdot';
 @mixin(Pannable)
 @mixin(Zoomable)
 export default class Stage extends StageElement {
-  _mouse = {
-    x: observable(0),
-    y: observable(0),
-  }
+
   grid = new Grid();
 
   labels = observableArray([]);
 
   children = observableArray([]);
 
-  minimapViewport = '-250 -250 1000 1000'; // TODO
+  minimapViewport = '-250 -250 1000 1000'; // TODO calculate
 
 
   constructor(svg, ...args) {
@@ -53,14 +50,14 @@ export default class Stage extends StageElement {
       this.origin.y(originPoint.y);
     });
 
-    // const loop = () => {
-    //   requestAnimationFrame(() => {
-    //     rect.rotate(.1);
-    //     this.rotate(.1);
-    //     loop();
-    //   });
-    // };
-    // loop();
+    const loop = () => {
+      requestAnimationFrame(() => {
+        rect.rotate(2);
+        this.rotate(.1);
+        loop();
+      });
+    };
+    loop();
   }
 
   scaleToFit = () => {
