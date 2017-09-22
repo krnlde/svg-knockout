@@ -1,4 +1,4 @@
-import {observable, pureComputed} from 'tko/dist/tko';
+import {observable, pureComputed} from 'tko';
 import StageElement from './stageelement';
 
 export default class TestDot extends StageElement {

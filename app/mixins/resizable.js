@@ -1,4 +1,4 @@
-import {observable, unwrap} from 'tko/dist/tko';
+import {observable, unwrap} from 'tko';
 import $ from 'jquery';
 
 import StageElement from '../stageelement';

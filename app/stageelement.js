@@ -1,4 +1,4 @@
-import {observable, pureComputed, unwrap} from 'tko/dist/tko';
+import {observable, pureComputed, unwrap} from 'tko';
 
 import Stage from './stage';
 import Pannable from './mixins/pannable';
@@ -181,10 +181,11 @@ export default class StageElement {
   static length({x, y}) {
     return Math.sqrt(x ** 2 + y ** 2);
   }
-  static norm({x, y}) {
-    const length = StageElement.length({x, y});
-    return StageElement.point.matrixTransform(x / length.x, y / length.y);
-  }
+
+  // static norm({x, y}) {
+  //   const length = StageElement.length({x, y});
+  //   return StageElement.point.matrixTransform(x / length.x, y / length.y); // What? This is bullshit
+  // }
 
   static snap(value, snapping) {
     if (StageElement.precise()) return value;

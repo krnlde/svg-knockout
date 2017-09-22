@@ -1,7 +1,6 @@
 import {mixin} from 'lodash-decorators';
-import {observable, observableArray, pureComputed} from 'tko';
+import {observable} from 'tko';
 
-import TestDot from './testdot';
 import StageElement from './stageelement';
 import Pannable from './mixins/pannable';
 import Resizable from './mixins/resizable';
@@ -12,8 +11,16 @@ import Zoomable from './mixins/zoomable';
 @mixin(Rotatable)
 @mixin(Resizable)
 @mixin(Zoomable)
-export default class Rectangle extends StageElement {
-  name = 'Rectangle';
+export default class Circle extends StageElement {
+  name = 'Circle';
 
-  children = observableArray([]);
+  r = observable(10);
+
+  constructor(parent, {r = 10} = {}) {
+    super(...arguments);
+    this.width(r);
+    this.height(r);
+
+    this.r(r);
+  }
 }

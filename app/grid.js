@@ -1,4 +1,4 @@
-import {observable} from 'tko/dist/tko';
+import {observable} from 'tko';
 
 export default class Grid {
   dx = observable(50);

@@ -1,4 +1,4 @@
-import ko from 'tko/dist/tko';
+import ko from 'tko';
 import $ from 'jquery';
 
 import Stage from './stage';

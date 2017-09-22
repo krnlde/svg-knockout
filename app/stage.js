@@ -1,11 +1,12 @@
 import {mixin} from 'lodash-decorators';
-import {observable, observableArray, pureComputed} from 'tko/dist/tko';
+import {observable, observableArray, pureComputed} from 'tko';
 import $ from 'jquery';
 
 import Pannable from './mixins/pannable';
 import Zoomable from './mixins/zoomable';
 import Grid from './grid';
 import StageElement from './stageelement';
+import Circle from './circle';
 import Rectangle from './rectangle';
 import TestDot from './testdot';
 
@@ -50,19 +51,18 @@ export default class Stage extends StageElement {
       this.origin.y(originPoint.y);
     });
 
-    const loop = () => {
-      requestAnimationFrame(() => {
-        rect.rotate(2);
-        this.rotate(.1);
-        loop();
-      });
-    };
-    loop();
+    // const loop = () => {
+    //   requestAnimationFrame(() => {
+    //     rect.rotate(2);
+    //     this.rotate(.1);
+    //     loop();
+    //   });
+    // };
+    // loop();
   }
 
   scaleToFit = () => {
     const bbox = this.svg.querySelector('#stage').getBoundingClientRect();
-    console.log(bbox);
     const scale = Math.min(this.svg.clientWidth / bbox.width, this.svg.clientHeight / bbox.height);
     this.matrix(this.matrix().translate((this.svg.clientWidth/2 - ((bbox.left + bbox.width)/2)) / scale, 0).scale(scale));
   };

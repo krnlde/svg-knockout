@@ -1,4 +1,4 @@
-// import {observable, unwrap} from 'tko/dist/tko';
+// import {observable, unwrap} from 'tko';
 import $ from 'jquery';
 
 import StageElement from '../stageelement';
@@ -32,7 +32,7 @@ const Pannable = {
 
         const delta = this.getPoint({
           x: currentPoint.x - startPoint.x,
-          y: currentPoint.y - startPoint.y
+          y: currentPoint.y - startPoint.y,
         });
 
         this.matrix(matrix.translate(delta.x, delta.y));

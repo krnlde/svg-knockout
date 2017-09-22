@@ -1,4 +1,4 @@
-import {unwrap} from 'tko/dist/tko';
+import {unwrap} from 'tko';
 import $ from 'jquery';
 
 import StageElement from '../stageelement';
@@ -16,7 +16,7 @@ const Zoomable = {
     event.preventDefault();
 
     const delta   = event.deltaY * (event.deltaMode ? 100 : 1);
-    const scaleBy = (delta > 0 ? 1 + (Math.abs(delta) / 1000) : 1 / (1 + (Math.abs(delta) / 1000)));
+    const scaleBy = (delta > 0 ? 1 / (1 + (Math.abs(delta) / 1000)) : 1 + (Math.abs(delta) / 1000));
     const point   = this.getMousePoint(event).matrixTransform(this.screenMatrix().inverse());
 
     this.zoomAround(point, scaleBy);

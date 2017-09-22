@@ -84,7 +84,7 @@
             <path data-bind="attr: {d: 'M ' + grid.dx() + ' 0 L 0 0 0 ' + grid.dy(), stroke: grid.color}" stroke-width="2" fill="none" stroke-opacity=".1" vector-effect="non-scaling-stroke"></path>
           </pattern>
           <pattern id="grid-pattern" data-bind="attr: {width: grid.dx() * 10, height: grid.dy() * 10, patternTransform: transform}" patternUnits="userSpaceOnUse">
-            <rect data-bind="attr: {width: grid.dx() * 10, height: grid.dy() * 10}" fill="url(#grid-pattern-small)"></rect>
+            <!-- <rect data-bind="attr: {width: grid.dx() * 10, height: grid.dy() * 10}" fill="url(#grid-pattern-small)"></rect> -->
             <path data-bind="attr: {d: 'M ' + (grid.dx() * 10) + ' 0 L 0 0 0 ' + (grid.dy() * 10), stroke: grid.color}" stroke-width="2" fill="none" stroke-opacity=".25" vector-effect="non-scaling-stroke"></path>
           </pattern>
 
@@ -98,6 +98,12 @@
               <g class="children" data-bind="foreach: {data: children, as: 'child'}">
                 <g data-bind="template: {name: child.name, data: child}"></g>
               </g>
+            </g>
+          </g>
+
+          <g id="Circle">
+            <g data-bind="attr: {transform: transform}">
+              <circle class="circle" data-bind="attr: {r: $data.r, fill: $data.color}, event: {mousemove: $data.updatePosition, mousedown: $data.handlePan, wheel: $data.handleZoom}"></rect>
             </g>
           </g>
 
@@ -119,11 +125,11 @@
         <!-- /stage -->
 
         <g class="ui-elements" data-bind="foreach: {data: children, as: 'child', afterQueueFlush: scaleToFit}">
-          <g data-bind="if: child.handleRotate">
-            <circle id="rotation-handle" class="handle" r="20" data-bind="visible: child.showHandle, attr: {cx: child.screenPoint.center().x, cy: child.screenPoint.center().y}, event: {mousedown: child.handleRotate}"></circle>
+          <g data-bind="if: child.handleRotate && child.showHandle()">
+            <circle id="rotation-handle" class="handle" r="20" data-bind="attr: {cx: child.screenPoint.center().x, cy: child.screenPoint.center().y}, event: {mousedown: child.handleRotate}"></circle>
           </g>
-          <g class="resize-handles" data-bind="if: child.setupResizeOrigin">
-            <circle class="handle" r="10" data-bind="visible: child.showHandle, attr: {cx: child.screenPoint.bottomRight().x, cy: child.screenPoint.bottomRight().y}, event: {mousedown: child.setupResizeOrigin(child.topLeft())}"></circle>
+          <g class="resize-handles" data-bind="if: child.setupResizeOrigin && child.showHandle()">
+            <circle class="handle" r="10" data-bind="attr: {cx: child.screenPoint.bottomRight().x, cy: child.screenPoint.bottomRight().y}, event: {mousedown: child.setupResizeOrigin(child.topLeft())}"></circle>
           </g>
         </g>
 
