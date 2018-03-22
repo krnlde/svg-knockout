@@ -19,7 +19,7 @@
     "babel-preset-env": "^1.6.0",
     "babel-preset-stage-2": "^6.24.1",
     "core-js": "^2.5.1",
-    "lodash-decorators": "^4.4.1",
-    "webpack": "^3.6.0"
+    "lodash-decorators": "^5.0.0",
+    "webpack": "^4.2.0"
   }
 }
