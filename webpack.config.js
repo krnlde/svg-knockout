@@ -2,13 +2,26 @@ const webpack = require('webpack');
 const path = require('path');
 
 module.exports = {
+  mode: 'development',
   entry: './app/index.js',
   output: {
-    path: path.resolve(__dirname, 'bundle'),
     publicPath: '/bundle/',
-    filename: 'application.js'
+    path: path.resolve(__dirname, 'bundle'),
+    filename: '[name].js',
   },
-  // devtool: '#cheap-source-map',
+  devtool: 'eval-source-map',
+  optimization: {
+    splitChunks: {
+      cacheGroups: {
+        default: false,
+        commons: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendor',
+          chunks: 'all',
+        }
+      }
+    }
+  },
   module: {
     rules: [
       {
