@@ -1,7 +1,8 @@
+import {mixin} from 'lodash-decorators';
 import {observable, pureComputed, unwrap} from 'tko';
 
 import Stage from './stage';
-import Pannable from './mixins/pannable';
+// import Pannable from './mixins/pannable';
 
 export default class StageElement {
 
@@ -35,30 +36,30 @@ export default class StageElement {
   };
 
   center = pureComputed(() => {
-    return this.getPoint({
+    return StageElement.getPoint({
       x: this.width() / 2,
       y: this.height() / 2,
     });
   });
 
   topLeft = pureComputed(() => {
-    return this.getPoint();
+    return StageElement.getPoint();
   });
 
   topRight = pureComputed(() => {
-    return this.getPoint({
+    return StageElement.getPoint({
       x: this.width(),
     });
   });
 
   bottomLeft = pureComputed(() => {
-    return this.getPoint({
+    return StageElement.getPoint({
       y: this.height(),
     });
   });
 
   bottomRight = pureComputed(() => {
-    return this.getPoint({
+    return StageElement.getPoint({
       x: this.width(),
       y: this.height(),
     });
@@ -86,11 +87,6 @@ export default class StageElement {
     }),
   };
 
-  transform = pureComputed(() => {
-    return this.matrix.toTransform()();
-    // return `translate(${this.x()}, ${this.y()}) rotate(${this.rotation()} ${this.origin.x()} ${this.origin.y()}) scale(${this.scale()})`;
-  });
-
   constructor(parent, {x = 0, y = 0, width = 10, height = 10, rotation = 0, scale = 1, color = '#000', name = null} = {}) {
     if (parent instanceof SVGSVGElement) {
       StageElement.identityMatrix = parent.createSVGMatrix();
@@ -114,11 +110,11 @@ export default class StageElement {
     if (name !== null) this.name(name);
 
     const intialMatrix = StageElement.identityMatrix
+      .translate(-this.origin.x(), -this.origin.y())
+      .rotate(rotation)
       .translate(x, y)
       .scale(scale)
       .translate(this.origin.x(), this.origin.y())
-      .rotate(rotation)
-      .translate(-this.origin.x(), -this.origin.y())
     this.matrix(intialMatrix);
   }
 
@@ -129,11 +125,16 @@ export default class StageElement {
   rotate(degree, around = this.origin) {
     const x = unwrap(around.x);
     const y = unwrap(around.y);
+
     const targetMatrix = this.matrix()
       .translate(x, y)
       .rotate(degree)
       .translate(-x, -y)
     this.matrix(targetMatrix);
+  }
+
+  focus = () => {
+    this.parent.matrix(this.matrix().inverse());
   }
 
   getClasses() {
@@ -148,23 +149,21 @@ export default class StageElement {
   getIdentityMatrix() {
     return StageElement.identityMatrix;
   }
-  getPoint({x = 0, y = 0} = {}) {
+
+  static getPoint({x = 0, y = 0} = {}) {
     return StageElement.point.matrixTransform(StageElement.identityMatrix.translate(x, y));
   }
 
-  getMousePoint({clientX: x, clientY: y} = {}) {
-    return this.getPoint({x, y});
+  static getMousePoint({clientX: x, clientY: y} = {}) {
+    return StageElement.getPoint({x, y});
   }
 
-  toTransform({a,b,c,d,e,f}) {
-    return 'matrix(' + [a, b, c, d, e, f].join(',') + ')';
-  }
 
-  getLeveledMatrix({x = 0, y = 0} = {}) {
-    const matrix = this.matrix();
-    const point = this.getPoint({x, y}).matrixTransform(matrix);
-    return matrix.inverse().translate(point.x, point.y);
-  }
+  // getLeveledMatrix({x = 0, y = 0} = {}) {
+  //   const matrix = this.matrix();
+  //   const point = StageElement.getPoint({x, y}).matrixTransform(matrix);
+  //   return matrix.inverse().translate(point.x, point.y);
+  // }
 
   static getRotation(m) {
     return Math.atan2(m.b, m.a) * 180 / Math.PI;

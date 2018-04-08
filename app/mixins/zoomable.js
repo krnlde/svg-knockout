@@ -17,7 +17,7 @@ const Zoomable = {
 
     const delta   = event.deltaY * (event.deltaMode ? 100 : 1);
     const scaleBy = (delta > 0 ? 1 / (1 + (Math.abs(delta) / 1000)) : 1 + (Math.abs(delta) / 1000));
-    const point   = this.getMousePoint(event).matrixTransform(this.screenMatrix().inverse());
+    const point   = StageElement.getMousePoint(event).matrixTransform(this.screenMatrix().inverse());
 
     this.zoomAround(point, scaleBy);
   },

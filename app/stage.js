@@ -2,6 +2,8 @@ import {mixin} from 'lodash-decorators';
 import {observable, observableArray, pureComputed} from 'tko';
 import $ from 'jquery';
 
+import keyboard from './keyboard';
+
 import Pannable from './mixins/pannable';
 import Zoomable from './mixins/zoomable';
 import Grid from './grid';
@@ -26,6 +28,9 @@ export default class Stage extends StageElement {
   constructor(svg, ...args) {
     super(svg, ...args);
 
+    this.width(this.svg.clientWidth);
+    this.height(this.svg.clientHeight);
+
     const rect = new Rectangle(this, {
       width:    300,
       height:   200,
@@ -45,25 +50,35 @@ export default class Stage extends StageElement {
 
     this.children.push(rect2);
 
-    $(svg).on('mousemove', (e) => {
-      const originPoint = this.getMousePoint(e).matrixTransform(this.screenMatrix().inverse());
-      this.origin.x(originPoint.x);
-      this.origin.y(originPoint.y);
-    });
+    $(window)
+      .on('keyup', (e) => {
+        if (e.which == keyboard.esc) this.scaleToFit();
+      });
 
-    // const loop = () => {
-    //   requestAnimationFrame(() => {
-    //     rect.rotate(2);
-    //     this.rotate(.1);
-    //     loop();
-    //   });
-    // };
-    // loop();
+    // $(svg).on('mousemove', (e) => {
+    //   const originPoint = StageElement.getMousePoint(e).matrixTransform(this.screenMatrix().inverse());
+    //   this.origin.x(originPoint.x);
+    //   this.origin.y(originPoint.y);
+    // });
+
+    // const radius = 25;
+    // for (let i = 0; i < 50; i += 1) {
+    //   const y = i * radius*2;
+
+    const circle = new Circle(this, {x: 200, r: 100, color: '#fff'});
+    this.children.push(circle);
+
+
+    const loop = () => {
+      requestAnimationFrame(() => {
+        rect.rotate(2);
+        // this.rotate(.1);
+        loop();
+      });
+    };
+    loop();
   }
 
   scaleToFit = () => {
-    const bbox = this.svg.querySelector('#stage').getBoundingClientRect();
-    const scale = Math.min(this.svg.clientWidth / bbox.width, this.svg.clientHeight / bbox.height);
-    this.matrix(this.matrix().translate((this.svg.clientWidth/2 - ((bbox.left + bbox.width)/2)) / scale, 0).scale(scale));
   };
 }

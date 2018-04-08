@@ -1,0 +1,28 @@
+const keyboard = Object.freeze({
+  backspace:   8,
+  enter:       13,
+  shift:       16,
+  ctrl:        17,
+  alt:         18,
+  esc:         27,
+  space:       32,
+  arrow_left:  37,
+  arrow_up:    38,
+  arrow_right: 39,
+  arrow_down:  40,
+  entf:        46,
+  a:           65,
+  c:           67,
+  v:           86,
+  x:           88,
+  y:           89,
+  z:           90,
+  meta:        91,
+  win:         92,
+  meta2:       93,
+  f1:          112,
+  plus:        187,
+  minus:       189,
+});
+
+export default keyboard;

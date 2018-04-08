@@ -18,7 +18,7 @@ const Rotatable = {
     const contextMatrix = this.screenMatrix().inverse();
     const matrix        = this.matrix();
     const $element      = $(event.target);
-    const startPoint    = this.getPoint({x: this.origin.x(), y: this.origin.y()});
+    const startPoint    = StageElement.getPoint({x: this.origin.x(), y: this.origin.y()});
 
     $element.addClass('rotating');
 
@@ -28,9 +28,9 @@ const Rotatable = {
         if (e.originalEvent.defaultPrevented) return this.afterPan(e, $element);
         e.preventDefault();
 
-        const currentPoint = this.getMousePoint(e).matrixTransform(contextMatrix);
+        const currentPoint = StageElement.getMousePoint(e).matrixTransform(contextMatrix);
 
-        const distance = StageElement.length(this.getPoint({
+        const distance = StageElement.length(StageElement.getPoint({
           x: currentPoint.x - startPoint.x,
           y: currentPoint.y - startPoint.y,
         }));
@@ -43,7 +43,7 @@ const Rotatable = {
             if (e.originalEvent.defaultPrevented) return this.afterPan(e, $element);
             e.preventDefault();
 
-            const currentPoint = this.getMousePoint(e).matrixTransform(contextMatrix);
+            const currentPoint = StageElement.getMousePoint(e).matrixTransform(contextMatrix);
             const angle = Math.atan2(currentPoint.y - startPoint.y, currentPoint.x - startPoint.x) * 180 / Math.PI + 90;
 
             const snappedAngle = StageElement.snap(angle, 15);

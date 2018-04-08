@@ -18,7 +18,7 @@ const Pannable = {
     const contextMatrix = this.screenMatrix().inverse();
     const matrix        = this.matrix();
     const $element      = $(event.target);
-    const startPoint    = this.getMousePoint(event).matrixTransform(contextMatrix);
+    const startPoint    = StageElement.getMousePoint(event).matrixTransform(contextMatrix);
 
     $element.addClass('panning');
 
@@ -28,9 +28,9 @@ const Pannable = {
         if (e.originalEvent.defaultPrevented) return this.afterPan(e, $element);
         e.preventDefault();
 
-        const currentPoint = this.getMousePoint(e).matrixTransform(contextMatrix);
+        const currentPoint = StageElement.getMousePoint(e).matrixTransform(contextMatrix);
 
-        const delta = this.getPoint({
+        const delta = StageElement.getPoint({
           x: currentPoint.x - startPoint.x,
           y: currentPoint.y - startPoint.y,
         });

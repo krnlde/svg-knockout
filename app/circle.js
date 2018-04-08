@@ -1,5 +1,5 @@
 import {mixin} from 'lodash-decorators';
-import {observable} from 'tko';
+import {observable, pureComputed} from 'tko';
 
 import StageElement from './stageelement';
 import Pannable from './mixins/pannable';
@@ -15,12 +15,46 @@ export default class Circle extends StageElement {
   name = 'Circle';
 
   r = observable(10);
+  radius = this.r;
 
   constructor(parent, {r = 10} = {}) {
     super(...arguments);
-    this.width(r);
-    this.height(r);
-
+    this.width(r*2);
+    this.height(r*2);
     this.r(r);
+
   }
+
+  center = pureComputed(() => {
+    return StageElement.getPoint();
+  });
+
+  topLeft = pureComputed(() => {
+    return StageElement.getPoint({
+      x: -this.r(),
+      y: -this.r(),
+    });
+  });
+
+  topRight = pureComputed(() => {
+    return StageElement.getPoint({
+      x: +this.r(),
+      y: -this.r(),
+    });
+  });
+
+  bottomLeft = pureComputed(() => {
+    return StageElement.getPoint({
+      x: -this.r(),
+      y: +this.r(),
+    });
+  });
+
+  bottomRight = pureComputed(() => {
+    return StageElement.getPoint({
+      x: +this.r(),
+      y: +this.r(),
+    });
+  });
+
 }
